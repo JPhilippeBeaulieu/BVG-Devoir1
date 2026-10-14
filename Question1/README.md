@@ -1,1 +1,1 @@
-La configuration Git/GitHub a été complétée
+### La configuration Git/GitHub a été complétée
