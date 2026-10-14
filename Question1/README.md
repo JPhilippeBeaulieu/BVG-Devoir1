@@ -1,1 +1,1 @@
-Question 1
+La configuration Git/GitHub a été complétée
