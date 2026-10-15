@@ -11,8 +11,11 @@ Furthermore, authors with a single retraction accounted for 63.1% of retracted a
 Overall, the increase in retractions appears to reflect changes in both publication and retraction practices. Shorter retraction times and broader criteria suggest lower barriers to removing problematic articles, while the growing contribution of authors with a single retraction suggests changes in flawed publication patterns.
 
 
-wc -w < README.md
 
 
 
 
+
+
+
+**Nombre de mots du résumé : 250**
