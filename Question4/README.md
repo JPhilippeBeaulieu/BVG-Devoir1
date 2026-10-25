@@ -14,4 +14,4 @@ Utiliser la RT-qPCR pour mesurer l’expression de REM16, afin de concevoir une 
 
 ## Haut débit
 
-Automatiser l’extraction, le pipetage, la préparation des réactions et l’analyse informatique. Associer plaques, codes-barres et contrôles pour assurer la traçabilité. Optimiser et standardiser les protocoles avant leur déploiement afin de limiter les variations techniques et d’améliorer la fiabilité.
+Travailler en plaque de 96 puits. Automatiser l’extraction, le pipetage, la préparation des réactions et l’analyse informatique. Associer plaques, codes-barres et contrôles pour assurer la traçabilité. Optimiser et standardiser les protocoles avant leur déploiement afin de limiter les variations techniques et d’améliorer la fiabilité.
