@@ -6,7 +6,7 @@ Utiliser la RT-qPCR pour mesurer l’expression de REM16, afin de concevoir une 
 
 **a) Collecte :** Prélever une quantité comparable de tissu foliaire sur chaque plante, au même stade (quelques semaines post-germination) et au même moment de la journée. Identifier les échantillons par codes-barres, puis les conserver à −80 °C.
 
-**b) Extraction & synthèse :** Extraire l’ARN sur plaques de 96 puits avec un kit adapté aux tissus foliaires, et le traiter à la DNase. Vérifier sa quantité et sa pureté au NanoDrop, ainsi que son intégrité par gel électrophorèse. Synthétiser l’ADNc à partir d’une quantité identique d’ARN avec une transcriptase inverse et des amorces appropriées.
+**b) Extraction & synthèse :** Extraire l’ARN avec un kit adapté aux tissus foliaires, et le traiter à la DNase. Vérifier sa quantité et sa pureté au NanoDrop, ainsi que son intégrité par gel électrophorèse. Synthétiser l’ADNc à partir d’une quantité identique d’ARN avec une transcriptase inverse et des amorces appropriées.
 
 **c) Mesures par RT-qPCR :** Quantifier REM16 avec des amorces spécifiques et normaliser son expression avec deux gènes de référence dont la stabilité aura été validée. Inclure des témoins XX et XY connus, un témoin sans matrice et un témoin sans transcription inverse.
 
