@@ -1,0 +1,5 @@
+Données par défaut — GitHub (copie temporaire de session) : https://raw.githubusercontent.com/JPhilippeBeaulieu/BVG-Devoir1/main/data/2_Data_RNASeq_Cannabis_Sex.csv
+20500 lignes de gènes et 138 plantes.
+1 mesure(s) manquante(s) ou infinie(s) exclue(s).
+Le fichier contient moins de gènes que les plus de 34 000 annoncés.
+Le préfixe Cannabis_ a été retiré avant la recherche exacte des loci.
