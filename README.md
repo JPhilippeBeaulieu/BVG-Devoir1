@@ -108,7 +108,9 @@ Cannabis_LOC115699937,10.4,10.8,8.5,8.9
 LOC115696989,6.5,6.7,6.6,6.8
 ```
 
-Au moins **deux valeurs valides par gène et par groupe sexuel** sont nécessaires. Un effectif différent des 138 plantes attendues est accepté, mais signalé.
+Le script n’impose aucun nombre fixe de gènes ou de plantes : les 20 500 gènes et 138 plantes correspondent uniquement au jeu de référence. D’autres effectifs sont acceptés, sous réserve du format attendu, d’au moins deux mesures valides par sexe et par gène, de la limite d’import de **100 Mo** et de la mémoire disponible.
+
+Le minimum de deux mesures valides par sexe et par gène est un **contrôle programmé dans Cannascope** pour éviter de produire des boxplots avec trop peu de données. Il ne constitue pas une taille d’échantillon suffisante pour valider scientifiquement un marqueur.
 
 La classification utilise REM16, mais l’import exige actuellement les deux gènes et les suffixes XX/XY, afin de permettre également les comparaisons graphiques et l’évaluation de la concordance.
 
