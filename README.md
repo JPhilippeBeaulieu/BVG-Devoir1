@@ -1,9 +1,9 @@
 # 🌿 Cannascope
 ## Analyse de l’expression de REM16 et FT1 et classification exploratoire du sexe chez *Cannabis sativa*
 
-Cannascope est un outil d’analyse développé en **R dans un document R Markdown avec Shiny**, dans le cadre du Devoir 1 du cours **BVG-7003**. Il permet d’explorer le potentiel des gènes **REM16 (LOC115699937)** et **FT1 (LOC115696989)** comme marqueurs du sexe chez le cannabis.
+## Cas d’utilisation
 
-L’interface permet de consulter un jeu de données de référence ou d’importer un fichier CSV compatible.
+Cannascope est un outil d’analyse développé en **R dans un document R Markdown avec Shiny**, dans le cadre du Devoir 1 du cours **BVG-7003**. Il permet d’explorer le potentiel des gènes **REM16 (LOC115699937)** et **FT1 (LOC115696989)** comme marqueurs du sexe chez *Cannabis sativa*. Son interface permet de consulter un jeu de données de référence ou d’importer un fichier CSV de structure compatible.
 
 ## Sommaire
 
