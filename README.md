@@ -43,7 +43,7 @@ La deuxième partie propose une classification fondée sur l’expression de REM
 
 Un tableau présente les prédictions et leur concordance avec les groupes XX/XY du fichier.
 
-**La version actuelle exige des identifiants terminés par `_XX` ou `_XY`. Elle ne prend donc pas encore en charge les plantes sans étiquette sexuelle.**
+La version actuelle exige des identifiants terminés par `_XX` ou `_XY`. Elle ne prend donc pas encore en charge les plantes sans étiquette sexuelle.
 
 Le seuil dépend de l’échelle d’expression du jeu fourni. Son application à d’autres données nécessite une échelle comparable et une validation indépendante. La concordance calculée sur le jeu de référence ne constitue pas une validation sur de nouvelles plantes.
 
@@ -110,7 +110,7 @@ LOC115696989,6.5,6.7,6.6,6.8
 
 Au moins **deux valeurs valides par gène et par groupe sexuel** sont nécessaires. Un effectif différent des 138 plantes attendues est accepté, mais signalé.
 
-La classification utilise REM16, mais l’import exige actuellement **les deux gènes et les suffixes XX/XY**, afin de permettre également les comparaisons graphiques et l’évaluation de la concordance.
+La classification utilise REM16, mais l’import exige actuellement les deux gènes et les suffixes XX/XY, afin de permettre également les comparaisons graphiques et l’évaluation de la concordance.
 
 ## Instructions
 
@@ -218,7 +218,7 @@ L’archive **Cannascope_resultats.zip** contient :
 | `qualite.txt` | Source active et messages de contrôle |
 | `environnement_R.txt` | Informations sur la session R |
 
-Les PNG sont exportés en **10 × 6 pouces à 300 dpi**. L’application ne modifie pas le CSV d’origine.
+Les PNG sont exportés en 10 × 6 pouces à 300 dpi. L’application ne modifie pas le CSV d’origine.
 
 ## Interprétation biologique
 
@@ -232,7 +232,7 @@ Le seuil de classification doit être validé sur des plantes indépendantes. Il
 
 L’interprétation présentée concerne le **jeu fourni** et ne devient pas automatiquement applicable à un autre fichier importé.
 
-**Lien entre l’exploration, la classification et le protocole proposé.** La première partie montre que l’expression de REM16 sépare les groupes XX et XY dans le jeu fourni, tandis que FT1 présente des distributions largement superposées. Ces observations motivent le choix de REM16 pour la deuxième partie, qui applique un seuil exploratoire de **9,5**, situé entre les valeurs observées des deux groupes. Elles orientent également la proposition de sexage à haut débit de la **Question 4**, fondée sur la mesure de REM16 par RT-qPCR. Cette méthode nécessiterait toutefois une validation expérimentale et une règle de classification propre aux mesures RT-qPCR : **le seuil transcriptomique de 9,5 ne peut pas y être transféré directement**.
+**Lien entre l’exploration, la classification et le protocole proposé.** La première partie montre que l’expression de REM16 sépare les groupes XX et XY dans le jeu fourni, tandis que FT1 présente des distributions largement superposées. Ces observations motivent le choix de REM16 pour la deuxième partie, qui applique un seuil exploratoire de **9,5**, situé entre les valeurs observées des deux groupes. Elles orientent également la proposition de sexage à haut débit de la **Question 4**, fondée sur la mesure de REM16 par RT-qPCR. Cette méthode nécessiterait toutefois une validation expérimentale et une règle de classification propre aux mesures RT-qPCR : le seuil transcriptomique de 9,5 ne peut pas y être transféré directement.
 
 ## Qualité des données et contrôles
 
@@ -264,7 +264,7 @@ Le dossier **Question2** contient une version réduite à **250 mots** du résum
 
 Le dossier **Question4** contient une proposition de sexage à haut débit par **RT-qPCR ciblant REM16**. Ce choix repose sur la séparation observée entre les groupes XX et XY, tandis que FT1 présente des distributions similaires.
 
-Le protocole décrit la collecte et le traitement des échantillons ainsi que l’utilisation envisagée de REM16. Il nécessite une validation expérimentale, notamment des gènes de référence, des conditions de mesure et de la règle de classification. Le seuil transcriptomique de **9,5 ne peut pas être appliqué directement aux mesures RT-qPCR**.
+Le protocole décrit la collecte et le traitement des échantillons ainsi que l’utilisation envisagée de REM16. Il nécessite une validation expérimentale, notamment des gènes de référence, des conditions de mesure et de la règle de classification. Le seuil transcriptomique de 9,5 ne peut pas être appliqué directement aux mesures RT-qPCR.
 
 ## Dépannage
 
