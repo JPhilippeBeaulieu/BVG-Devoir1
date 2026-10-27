@@ -195,7 +195,7 @@ L’application produit trois figures :
 
 Chaque point représente une plante. Les boîtes montrent les quartiles et la médiane. Les trois figures utilisent une échelle verticale commune et les mêmes couleurs pour les groupes.
 
-Les graphiques interactifs sont construits directement avec **Plotly**. Les figures PNG sont produites avec **ggplot2**.
+Les graphiques interactifs sont créés avec **Plotly**. Les figures téléchargées sont construites avec **ggplot2**, puis enregistrées au format PNG par R.
 
 ### Tableaux
 
