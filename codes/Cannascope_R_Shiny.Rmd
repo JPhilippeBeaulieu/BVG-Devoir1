@@ -1,0 +1,777 @@
+---
+title: "Cannascope"
+subtitle: "XXplore — Expression de REM16 et FT1"
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    code_folding: hide
+runtime: shiny
+params:
+  fichier: "data/2_Data_RNASeq_Cannabis_Sex.csv"
+---
+
+<!--
+INSTALLATION ZIP — dans la console R, une seule fois si absent :
+install.packages("zip")
+
+DÉPANNAGE AVANT LE LANCEMENT — knitr / xfun / rmarkdown
+Si le document fonctionne, ne rien modifier.
+Si Run Document échoue AVANT l'analyse avec une erreur comme
+« object 'attr' is not exported by 'namespace:xfun' » :
+1. Redémarrer la session R (Session > Restart R dans RStudio).
+2. Dans la CONSOLE R, exécuter :
+   install.packages(c("xfun", "knitr", "rmarkdown"))
+3. Redémarrer encore R puis cliquer sur Run Document.
+4. Si le problème persiste, conserver l'erreur et examiner :
+   .libPaths()
+   sessionInfo()
+Plusieurs bibliothèques peuvent fournir des versions différentes.
+Cette réparation n'est pas exécutée automatiquement : si rmarkdown est
+bloqué au démarrage, le code du présent document ne peut pas encore tourner.
+-->
+
+
+<!-- GUIDE
+Cette version est écrite en R avec une présentation HTML/CSS.
+Aucun JavaScript personnalisé n’est écrit dans ce fichier.
+Shiny, Plotly et DT génèrent leurs composants web automatiquement.
+
+Démarrage : ouvrir ce Rmd dans RStudio puis cliquer Run Document.
+Alternative : rmarkdown::run("Cannascope_R_Shiny.Rmd").
+Conserver le dossier data à côté du document.
+Le document nécessite un processus R actif pour l’import et les boutons.
+Un hébergement Shiny est nécessaire pour partager l’application par URL.
+
+Installer une fois dans la console R :
+install.packages(c("rmarkdown", "shiny", "ggplot2", "plotly", "DT", "htmltools", "knitr", "zip"))
+-->
+
+<style>
+/* Fond, police, largeur du contenu, titres et en-tête. */
+body {background:#f3f7f5;color:#193b35;font-size:16px;}
+.main-container {max-width:1250px;}
+h1,h2,h3 {color:#125c49;}
+#header {padding:28px;background:#e0eee7;border-radius:18px;margin-bottom:24px;}
+.metrics {display:flex;gap:16px;flex-wrap:wrap;margin:24px 0;}
+.metric {background:white;border:1px solid #dce8e1;border-radius:16px;padding:22px;flex:1;min-width:150px;box-shadow:0 5px 18px #183e3510;}
+.metric strong {display:block;font-size:34px;color:#125c49;}
+.note {background:#fff5dc;border-left:5px solid #d3a140;padding:18px;border-radius:8px;margin:20px 0;}
+.tab-content {background:white;border-radius:0 0 16px 16px;padding:20px;border:1px solid #e0e9e4;}
+.nav-tabs>li.active>a {color:#125c49;font-weight:bold;}
+
+/* Cartes, boutons, tableau et onglets de navigation. */
+.panel{background:white;padding:24px;border-radius:18px;border:1px solid #dce8df;margin:20px 0}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}button,.import{background:#145d49;color:white;border:0;border-radius:9px;padding:12px 18px;cursor:pointer}.cards{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.cards>div{background:white;border:1px solid #dce8e1;border-radius:16px;padding:22px;flex:1;min-width:150px;box-shadow:0 5px 18px #183e3510}.cards strong{display:block;font-size:34px;color:#125c49}#status{white-space:pre-wrap;padding:14px;background:#fff5dc;border-left:5px solid #d3a140;border-radius:8px}#data-table{max-height:480px;overflow:auto}table{width:100%;font-size:14px}td,th{padding:8px;border-bottom:1px solid #eee}.plot{min-height:460px}.explore-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.explore-tabs button{background:transparent;color:#125c49;border:1px solid #dce8e1;border-radius:9px 9px 0 0}.explore-tabs button[aria-selected=true]{background:#125c49;color:white}.explore-pane{background:white;border:1px solid #dce8e1;border-radius:0 0 16px 16px;padding:20px}.explore-pane[hidden]{display:none}
+
+/* Feuilles décoratives intégrées : aucune image externe. */
+body {background-color:#f3f7f5;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22440%22%20height%3D%22460%22%20viewBox%3D%220%200%20440%20460%22%3E%3Cg%20fill%3D%22%23287154%22%20fill-opacity%3D%220.075%22%20transform%3D%22translate%28220%20225%29%20rotate%28-22%29%22%3E%3Cpath%20d%3D%22M0%2055%20C-20%200%20-18%20-95%200%20-190%20C18%20-95%2020%200%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M0%2055%20C-55%2025%20-95%20-35%20-130%20-115%20C-65%20-75%20-20%20-20%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M0%2055%20C55%2025%2095%20-35%20130%20-115%20C65%20-75%2020%20-20%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M0%2055%20C-60%2065%20-120%2035%20-175%20-10%20C-100%20-10%20-35%2010%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M0%2055%20C60%2065%20120%2035%20175%20-10%20C100%20-10%2035%2010%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M0%2055%20C-40%2085%20-90%2095%20-135%2080%20C-75%2045%20-35%2045%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M0%2055%20C40%2085%2090%2095%20135%2080%20C75%2045%2035%2045%200%2055Z%22%2F%3E%3Cpath%20d%3D%22M-3%2045%20L3%2045%20L6%20150%20L-2%20150Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-repeat:repeat;background-size:440px 460px;background-attachment:fixed;}
+#header {background:rgba(224,238,231,.97);}
+</style>
+
+<!-- Le guide de lecture est affiché en fin de page, avant le code annoté. -->
+
+```{r fonctions, include=FALSE}
+# ## Étape 1 — Préparer les outils R
+#
+# **But :** vérifier les dépendances avant de lire les données. Une dépendance est une
+# bibliothèque de fonctions ; elle doit être installée une fois, puis chargée dans chaque
+# session. Le document indique les packages absents plutôt que de les installer à votre insu.
+
+# ÉTAPE 1 — Vérifier les packages, puis charger les outils nécessaires.
+requis <- c("shiny", "ggplot2", "plotly", "DT", "htmltools", "knitr", "zip")
+# Distinguer un package absent d'un package installé mais impossible à charger.
+for (nom in requis) {
+  if (!nzchar(system.file(package = nom))) {
+    stop("Package absent : ", nom, ". Installer ce package dans la console R.")
+  }
+  tryCatch(loadNamespace(nom), error = function(e) {
+    stop("Package installé mais impossible à charger : ", nom,
+      ". Redémarrer R et vérifier les dépendances. Détail : ",
+      conditionMessage(e), call. = FALSE)
+  })
+}
+library(shiny)
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(shiny.maxRequestSize = 100 * 1024^2) # Taille maximale : 100 Mo.
+
+# ## Étapes 2 à 5 — Lire, vérifier et extraire les données
+#
+# **Entrée :** un chemin vers un CSV. **Sortie :** une liste regroupant le tableau d'expressions
+# valides, le journal des exclusions et les informations de qualité.
+#
+# La fonction `analyser_csv()` suit quatre sous-étapes commentées : lecture du tableau,
+# identification des groupes, recherche exacte des loci et exclusion des mesures invalides. Le
+# tableau final est au **format long** : une ligne correspond à une expression, pour une plante
+# et un gène. Une plante apparaît donc normalement deux fois.
+#
+# Les contrôles évitent de produire un graphique trompeur à partir d'un fichier mal organisé. Les
+# mesures manquantes sont isolées, sans supprimer toutes les données de la plante concernée.
+
+# ÉTAPE 2 — Analyser un CSV en R.
+# La fonction est réutilisée pour les données par défaut et chaque import.
+# Elle retourne les mesures valides, les exclusions et les informations de qualité.
+analyser_csv <- function(fichier) {
+  # Lire l'en-tête pour reconnaître une virgule ou un point-virgule.
+  # Lire uniquement la première ligne pour choisir le séparateur, puis lire tout le fichier.
+  entete <- readLines(fichier, n = 1, warn = FALSE, encoding = "UTF-8")
+  if (!length(entete)) stop("Le fichier est vide.")
+  sep <- if (length(strsplit(entete, ";", fixed = TRUE)[[1]]) >
+    length(strsplit(entete, ",", fixed = TRUE)[[1]])) {
+    ";"
+  } else {
+    ","
+  }
+  # Conserver les noms des plantes tels quels (check.names=FALSE).
+  # fill=FALSE évite de compléter silencieusement des lignes trop courtes.
+  d <- read.table(fichier,
+    header = TRUE, sep = sep, quote = "\"",
+    comment.char = "", check.names = FALSE, stringsAsFactors = FALSE,
+    fill = FALSE, row.names = NULL, fileEncoding = "UTF-8-BOM",
+    na.strings = c("NA", "NaN", "", "null")
+  )
+  if (ncol(d) < 2 || nrow(d) < 1) {
+    stop("CSV attendu : première colonne = loci ; autres colonnes = plantes.")
+  }
+
+  # ÉTAPE 3 — Contrôler les noms des plantes et leur groupe sexuel.
+  # [-1] retire la première colonne, réservée aux identifiants des gènes.
+  plantes <- names(d)[-1]
+  if (anyDuplicated(plantes)) stop("Des noms de plantes sont dupliqués.")
+  if (any(!grepl("_(XX|XY)$", plantes))) {
+    stop("Chaque plante doit porter un suffixe _XX ou _XY.")
+  }
+  # Le symbole $ de l’expression régulière signifie « fin du nom ».
+  # factor fixe l’ordre des groupes pour toutes les figures.
+  sexe <- factor(ifelse(grepl("_XX$", plantes), "Femelle (XX)", "Mâle (XY)"),
+    levels = c("Femelle (XX)", "Mâle (XY)")
+  )
+  # Le sexe vient des étiquettes du fichier, jamais de l'expression du gène testé.
+
+  # ÉTAPE 4 — Corriger le préfixe documenté et rechercher les loci exacts.
+  originaux <- trimws(as.character(d[[1]]))
+  loci <- sub("^Cannabis_", "", originaux)
+  cibles <- c(REM16 = "LOC115699937", FT1 = "LOC115696989")
+  # lapply applique la même recette à chacun des deux noms de gènes.
+  mesures <- lapply(names(cibles), function(gene) {
+    # which renvoie la position de la ligne correspondant exactement au locus.
+    i <- which(loci == cibles[[gene]])
+    if (length(i) != 1) {
+      stop(gene, " : ", length(i), " lignes trouvées ; une seule attendue.")
+    }
+    # d[i, -1] conserve la ligne choisie et toutes les colonnes des plantes.
+    # unlist transforme cette ligne en une série de valeurs.
+    brut <- trimws(as.character(unlist(d[i, -1, drop = FALSE], use.names = FALSE)))
+    # Accepter une virgule décimale lorsque le séparateur est le point-virgule.
+    if (sep == ";") brut <- gsub(",", ".", brut, fixed = TRUE)
+    # Valeurs manquantes et infinies identifiées explicitement.
+    absent <- is.na(brut) | tolower(brut) %in% c("", "na", "nan", "null")
+    infini <- grepl("^[+-]?inf(inity)?$", brut, ignore.case = TRUE)
+    # as.numeric transforme les nombres lus comme du texte en nombres utilisables.
+    # Les conversions impossibles sont contrôlées juste après : elles ne sont pas ignorées.
+    valeurs <- suppressWarnings(as.numeric(brut))
+    incorrect <- !absent & !infini & is.na(valeurs)
+    if (any(incorrect)) {
+      stop(
+        "Valeur non numérique pour ", gene,
+        " chez ", paste(plantes[incorrect], collapse = ", ")
+      )
+    }
+    valeurs[absent] <- NA_real_
+    data.frame(
+      Plante = plantes, Sexe = sexe, Gene = gene,
+      Locus = cibles[[gene]], Identifiant_source = originaux[i],
+      Expression = valeurs, stringsAsFactors = FALSE
+    )
+  })
+  # rbind empile les mesures de REM16 et FT1 dans un seul tableau.
+  x <- do.call(rbind, mesures)
+  x$Gene <- factor(x$Gene, levels = names(cibles))
+
+  # ÉTAPE 5 — Exclure seulement les mesures invalides, sans retirer la plante
+  # de l'autre gène. Conserver un tableau d'exclusions pour la traçabilité.
+  exclues <- x[!is.finite(x$Expression), ]
+  valides <- x[is.finite(x$Expression), ]
+  if (any(with(valides, table(Gene, Sexe)) < 2)) {
+    stop("Au moins deux mesures valides sont nécessaires par gène et par sexe.")
+  }
+  notes <- c(
+    paste(nrow(d), "lignes de gènes et", length(plantes), "plantes."),
+    paste(nrow(exclues), "mesure(s) manquante(s) ou infinie(s) exclue(s).")
+  )
+  if (length(plantes) != 138) {
+    notes <- c(
+      notes,
+      "L'effectif diffère des 138 plantes annoncées dans l'activité."
+    )
+  }
+  if (nrow(d) <= 34000) {
+    notes <- c(
+      notes,
+      "Le fichier contient moins de gènes que les plus de 34 000 annoncés."
+    )
+  }
+  if (any(grepl("^Cannabis_", x$Identifiant_source))) {
+    notes <- c(
+      notes,
+      "Le préfixe Cannabis_ a été retiré avant la recherche exacte des loci ; cela concerne notamment REM16, identifié comme Cannabis_LOC115699937 dans le fichier fourni."
+    )
+  }
+  # Une liste conserve plusieurs résultats sous des noms explicites.
+  # Les autres fonctions utilisent notamment resultat$expression et resultat$exclues.
+  list(
+    expression = valides, exclues = exclues, notes = notes,
+    plantes = plantes, sexe = sexe, genes = nrow(d)
+  )
+}
+
+# ## Étape 6 — Construire les trois figures avec ggplot2
+#
+# **Voici le code de dessin réellement utilisé par l'application.** La même fonction est appelée
+# pour les trois figures : elle évite de répéter et de maintenir trois versions presque
+# identiques du graphique.
+#
+# - `faire_graphique(resultat, "REM16")` sélectionne REM16.
+# - `faire_graphique(resultat, "FT1")` sélectionne FT1.
+# - `faire_graphique(resultat)` conserve les deux gènes et les sépare avec `facet_wrap()`.
+#
+# Dans `ggplot()`, `aes()` relie les colonnes aux axes et aux couleurs. `geom_boxplot()` ajoute
+# les boîtes et `geom_point()` les plantes individuelles. Les couches suivantes règlent les
+# couleurs, les limites, les titres et le thème. Le déplacement aléatoire horizontal rend les
+# points visibles sans changer leur valeur ; sa graine est fixée pour un résultat reproductible.
+#
+# L'échelle verticale est calculée à partir des **deux gènes**, même lorsqu'un seul est affiché.
+# Cela permet une comparaison directe. Aucune unité TPM ou transformation logarithmique n'est
+# supposée.
+
+# ÉTAPE 6 — Fabriquer les trois figures avec une même fonction R.
+faire_graphique <- function(resultat, gene = NULL) {
+  toutes <- resultat$expression
+  x <- if (is.null(gene)) toutes else toutes[toutes$Gene == gene, ]
+  limites <- range(toutes$Expression)
+  marge <- max(diff(limites) * 0.08, 0.1)
+  # Préparer les textes affichés au survol des points dans le navigateur.
+  x$Info <- paste0(
+    "Plante : ", x$Plante, "\nGène : ", x$Gene,
+    "\nExpression : ", round(x$Expression, 4)
+  )
+  p <- ggplot(x, aes(Sexe, Expression, fill = Sexe)) +
+    # Les extrêmes du boxplot ne sont pas dessinés deux fois : tous les points
+    # sont représentés par geom_point, sans supprimer les extrêmes.
+    geom_boxplot(width = 0.48, alpha = 0.5, outlier.shape = NA) +
+    geom_point(
+      size = 1.9, alpha = 0.65, shape = 21,
+      position = position_jitter(width = 0.13, height = 0, seed = 42)
+    ) +
+    scale_fill_manual(values = c("Femelle (XX)" = "#269784", "Mâle (XY)" = "#8B65BD")) +
+    coord_cartesian(ylim = limites + c(-marge, marge)) +
+    labs(
+      title = if (is.null(gene)) {
+        "Niveau d’expression de REM16 et FT1 en fonction du sexe"
+      } else {
+        paste("Niveau d’expression de", gene, "en fonction du sexe")
+      },
+      x = "Sexe", y = "Niveau d’expression", fill = "Groupe sexuel"
+    ) +
+    theme_minimal(base_size = 13) +
+    theme(
+      panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(),
+      legend.position = "bottom", plot.title = element_text(face = "bold", colour = "#125c49"),
+      strip.text = element_text(face = "bold")
+    )
+  # NULL signifie qu’aucun gène unique n’a été demandé : afficher les deux panneaux.
+  if (is.null(gene)) p <- p + facet_wrap(~Gene, nrow = 1)
+  # Dernier objet de la fonction : renvoyer la figure au lieu de l’enregistrer ici.
+  p
+}
+
+# ## Étape 7 — Retrouver les données par défaut
+#
+# **But :** éviter un chemin personnel tel que `/Users/nom/...`. Le programme cherche dans
+# quelques dossiers voisins du `.Rmd`, en priorité celui indiqué par le paramètre `fichier`. Il
+# ne parcourt pas tout l'ordinateur.
+#
+# `local()` conserve une copie des chemins dès le démarrage. La fonction peut ainsi les
+# réutiliser après un clic, même si l'objet temporaire `params` n'est plus accessible. Pour un
+# fichier placé ailleurs, le sélecteur d'import évite toute recherche automatique.
+
+# AFFICHAGE INTERACTIF DIRECT — sans conversion ggplotly().
+# Les mêmes mesures, couleurs, titres et limites sont utilisées que dans les PNG.
+# Les infobulles sont définies ici ; ggplot2 n'a plus d'esthétique inconnue "text".
+faire_interactif <- function(resultat, gene = NULL) {
+  donnees <- resultat$expression
+  limites <- range(donnees$Expression)
+  marge <- max(diff(limites) * 0.08, 0.1)
+  groupes <- c("Femelle (XX)", "Mâle (XY)")
+  couleurs <- c("#269784", "#8B65BD")
+  panneau <- function(nom, legende = TRUE) {
+    p <- plotly::plot_ly()
+    for (i in seq_along(groupes)) {
+      x <- donnees[donnees$Gene == nom & donnees$Sexe == groupes[i], ]
+      # Quantiles linéaires, comme ceux de ggplot2 pour les données non pondérées.
+      p <- plotly::add_trace(p, type = "box", name = groupes[i],
+        legendgroup = groupes[i], showlegend = legende,
+        x = rep(groupes[i], nrow(x)), y = x$Expression,
+        text = paste0("Plante : ", x$Plante, "<br>Gène : ", nom),
+        hovertemplate = "%{text}<br>Niveau d’expression : %{y:.4f}<extra>%{fullData.name}</extra>",
+        quartilemethod = "linear", boxpoints = "all", jitter = 0.3, pointpos = 0,
+        fillcolor = if (i == 1) "rgba(38,151,132,0.45)" else "rgba(139,101,189,0.45)",
+        line = list(color = couleurs[i]),
+        marker = list(color = couleurs[i], size = 5, opacity = 0.65))
+    }
+    plotly::layout(p,
+      xaxis = list(title = "Sexe", categoryorder = "array", categoryarray = groupes),
+      yaxis = list(title = "Niveau d’expression", range = limites + c(-marge, marge)))
+  }
+  if (is.null(gene)) {
+    p <- plotly::subplot(panneau("REM16"), panneau("FT1", FALSE),
+      nrows = 1, shareY = TRUE, titleY = TRUE, titleX = TRUE, margin = 0.07)
+    p <- plotly::layout(p, annotations = list(
+      list(text = "REM16", x = 0.22, y = 1.04, xref = "paper", yref = "paper", showarrow = FALSE),
+      list(text = "FT1", x = 0.78, y = 1.04, xref = "paper", yref = "paper", showarrow = FALSE)))
+    titre <- "Niveau d’expression de REM16 et FT1 en fonction du sexe"
+  } else {
+    p <- panneau(gene)
+    titre <- paste("Niveau d’expression de", gene, "en fonction du sexe")
+  }
+  p <- plotly::layout(p, title = list(text = titre, font = list(size = 17, color = "#125c49")),
+    paper_bgcolor = "white", plot_bgcolor = "white",
+    margin = list(t = 95, b = 100, l = 70, r = 25),
+    legend = list(orientation = "h", x = 0, y = -0.25))
+  plotly::config(p, displaylogo = FALSE, responsive = TRUE)
+}
+
+# EXPORT PNG — utiliser le périphérique fourni par R, sans charger ragg.
+# Un problème binaire de ragg ne doit pas bloquer les figures ou le ZIP.
+exporter_png <- function(graphique, fichier) {
+  # Quartz est natif sur macOS ; Cairo peut dépendre de bibliothèques X11 absentes.
+  types <- c(if (isTRUE(capabilities("aqua"))) "quartz",
+             if (isTRUE(capabilities("cairo"))) "cairo",
+             if (.Platform$OS.type == "windows") "windows")
+  if (!length(types)) stop("Aucun moteur PNG natif disponible dans cette installation de R.")
+  erreurs <- character()
+  for (type in types) {
+    avant <- grDevices::dev.cur()
+    succes <- tryCatch({
+      # Convertir une alerte du pilote en échec explicite plutôt qu'en PNG absent.
+      withCallingHandlers(
+        grDevices::png(filename = fichier, width = 10, height = 6,
+          units = "in", res = 300, bg = "white", type = type),
+        warning = function(w) stop(conditionMessage(w), call. = FALSE)
+      )
+      print(graphique)
+      grDevices::dev.off()
+      if (!file.exists(fichier) || file.info(fichier)$size == 0) stop("PNG absent ou vide.")
+      TRUE
+    }, error = function(e) {
+      if (grDevices::dev.cur() != avant) grDevices::dev.off()
+      erreurs <<- c(erreurs, paste(type, conditionMessage(e), sep = " : "))
+      FALSE
+    })
+    if (succes) return(invisible(fichier))
+  }
+  stop("Export PNG impossible. Vérifier l'installation de R. ", paste(erreurs, collapse = " ; "))
+}
+
+# VOLET COMPLÉMENTAIRE — Classification exploratoire, sans modifier les figures.
+# Le groupe connu demeure celui des noms XX/XY ; il n'est jamais remplacé
+# par la prédiction dans les analyses descriptives.
+classer_rem16 <- function(resultat, seuil = 9.5) {
+  if (length(seuil) != 1 || !is.finite(seuil)) {
+    stop("Le seuil doit être un nombre fini.")
+  }
+  mesures <- resultat$expression
+  rem <- mesures[mesures$Gene == "REM16", ]
+  # match conserve toutes les plantes, même si REM16 était manquant.
+  valeurs <- rem$Expression[match(resultat$plantes, rem$Plante)]
+  prediction <- rep("Non déterminé", length(valeurs))
+  prediction[is.finite(valeurs) & valeurs > seuil] <- "Femelle (XX)"
+  prediction[is.finite(valeurs) & valeurs < seuil] <- "Mâle (XY)"
+  # Une valeur exactement au seuil est laissée indéterminée.
+  connu <- as.character(resultat$sexe)
+  concordance <- ifelse(prediction == "Non déterminé", "Non évaluable",
+                       ifelse(prediction == connu, "Oui", "Non"))
+  data.frame(Plante = resultat$plantes, Expression_REM16 = valeurs,
+    Groupe_fichier = connu, Sexe_predit = prediction,
+    Concordance = concordance, Seuil = seuil, stringsAsFactors = FALSE)
+}
+
+# ÉTAPE 7 — Trouver le fichier par défaut relativement au document.
+# Le dossier complet peut être déplacé sur un autre ordinateur.
+# Capturer les paramètres et les chemins au démarrage du document.
+# Les callbacks Shiny ne doivent pas rechercher l'objet temporaire params.
+trouver_defaut <- local({
+  configuration <- get0("params", inherits = TRUE, ifnotfound = list())
+  relatif <- configuration$fichier
+  if (is.null(relatif) || !length(relatif) || !nzchar(relatif[1])) {
+    relatif <- "data/2_Data_RNASeq_Cannabis_Sex.csv"
+  }
+  document <- knitr::current_input(dir = TRUE)
+  racine <- if (length(document) && nzchar(document[1])) {
+    dirname(normalizePath(document[1], mustWork = FALSE))
+  } else {
+    getwd()
+  }
+  chemins <- unique(c(
+    file.path(racine, relatif),
+    file.path(racine, "..", relatif),
+    file.path(racine, "data", "2_Data_RNASeq_Cannabis_Sex.csv"),
+    file.path(racine, "..", "data", "2_Data_RNASeq_Cannabis_Sex.csv"),
+    file.path(racine, "..", "Fichiers_Files", "2_Data_RNASeq_Cannabis_Sex.csv"),
+    normalizePath(relatif, mustWork = FALSE)
+  ))
+  # Adresse Raw : GitHub fournit le contenu CSV, sans sa page de présentation.
+  # Une modification du fichier sur la branche main peut changer un téléchargement futur.
+  default_file_path <- paste0(
+    "https://raw.githubusercontent.com/",
+    "JPhilippeBeaulieu/BVG-Devoir1/main/data/",
+    "2_Data_RNASeq_Cannabis_Sex.csv"
+  )
+  # Réutiliser le téléchargement pendant cette session, sans modifier le dépôt local.
+  cache <- tempfile("cannascope_github_", fileext = ".csv")
+
+  function() {
+    disponibles <- chemins[file.exists(chemins) & !dir.exists(chemins)]
+
+    # Priorité 1 : le fichier local, utilisable sans connexion Internet.
+    if (length(disponibles)) {
+      chemin <- disponibles[1]
+      attr(chemin, "source_donnees") <- paste(
+        "Données par défaut — fichier local :", basename(chemin)
+      )
+      return(chemin)
+    }
+
+    # Priorité 2 : GitHub, uniquement lorsqu'aucun fichier local n'est trouvé.
+    # Un fichier local invalide n'est pas remplacé silencieusement par une autre version.
+    if (!file.exists(cache)) {
+      tryCatch({
+        statut <- utils::download.file(
+          url = default_file_path, destfile = cache,
+          mode = "wb", quiet = TRUE, method = "libcurl"
+        )
+        if (statut != 0 || !file.exists(cache) || file.info(cache)$size == 0) {
+          stop("Le téléchargement n'a pas produit un CSV non vide.")
+        }
+      }, error = function(e) {
+        unlink(cache)
+        stop(
+          "CSV local absent et téléchargement GitHub impossible. ",
+          "Vérifier Internet, conserver le dossier data ou importer un CSV. Détail : ",
+          conditionMessage(e), call. = FALSE
+        )
+      })
+    }
+    chemin <- cache
+    attr(chemin, "source_donnees") <- paste(
+      "Données par défaut — GitHub (copie temporaire de session) :", default_file_path
+    )
+    chemin
+  }
+})
+```
+
+## Charger les données
+
+Les données par défaut sont lues localement en priorité ; si le CSV est absent, il est téléchargé depuis le dépôt GitHub de JPhilippeBeaulieu. La source active est affichée dans les messages. Le téléchargement nécessite Internet et reste en mémoire disque temporaire pendant la session.
+
+Le bouton d'import et le bouton de restauration déclenchent la **même analyse en R**. Les fichiers importés sont transmis au processus R qui exécute cette application. En cas d'hébergement distant, ils sont donc envoyés au serveur Shiny.
+
+```{r controles, echo=FALSE}
+# ## Étape 8 — Créer les boutons et les zones de messages
+#
+# Le bouton d'import et le bouton de restauration déclenchent la **même analyse en R**. Les
+# fichiers importés sont transmis au processus R qui exécute cette application. En cas
+# d'hébergement distant, ils sont donc envoyés au serveur Shiny.
+#
+# Chaque contrôle reçoit un identifiant : `csv`, `defaut` ou `archive`. Ces noms relient les
+# boutons à leur code de traitement plus bas. `uiOutput()` réserve une zone qui sera remplie avec
+# les messages et les effectifs.
+
+# ÉTAPE 8 — Construire les contrôles avec des fonctions R de Shiny.
+# Shiny prend en charge les événements web ; aucun script JavaScript personnalisé.
+div(
+  class = "panel",
+  fluidRow(
+    column(6, fileInput("csv", "Importer un CSV", accept = ".csv")),
+    column(6, actionButton("defaut", "Utiliser les données par défaut"))
+  ),
+  uiOutput("qualite"),
+  downloadButton("archive", "Télécharger les trois figures et les données")
+)
+uiOutput("effectifs")
+```
+
+## Exploration
+
+```{r interface, echo=FALSE}
+# ## Étape 9 — Réserver les emplacements des graphiques
+#
+# `plotlyOutput("rem")` prépare un emplacement, sans calculer de figure. La sortie `output$rem`
+# de l'étape 12 fournira le dessin. La même correspondance de noms s'applique à FT1, à la
+# comparaison et aux tableaux.
+
+# ÉTAPE 9 — Présenter les sorties dans des onglets.
+# Ces fonctions réservent un emplacement ; les valeurs seront calculées ci-dessous.
+tabsetPanel(
+  tabPanel("REM16", plotly::plotlyOutput("rem", height = "500px")),
+  tabPanel("FT1", plotly::plotlyOutput("ft", height = "500px")),
+  tabPanel("Comparaison", plotly::plotlyOutput("combine", height = "500px")),
+  tabPanel("Données", DT::DTOutput("tableau")),
+  tabPanel("Exclusions", DT::DTOutput("exclusions")),
+  tabPanel("Classification exploratoire",
+    div(class = "note",
+      strong("Prédiction exploratoire — REM16 uniquement"),
+      p("Seuil proposé à partir du jeu fourni : 9,5. Ce seuil n'est pas validé pour de nouvelles plantes, une autre normalisation ou d'autres conditions biologiques."),
+      p("Au-dessus du seuil : femelle prédite ; en dessous : mâle prédit. À égalité ou si REM16 est manquant : non déterminé."),
+      p("Les groupes XX/XY des figures restent inchangés. La concordance ci-dessous porte sur les données utilisées pour explorer le seuil ; elle ne mesure pas une performance indépendante.")
+    ),
+    numericInput("seuil_rem16", "Seuil d'expression de REM16", value = 9.5, step = 0.1),
+    uiOutput("bilan_classification"),
+    DT::DTOutput("classification"),
+    h4("Groupe du fichier et sexe prédit"),
+    tableOutput("matrice_classification"),
+    downloadButton("export_classification", "Télécharger la classification CSV")
+  )
+)
+```
+
+```{r reactivite, include=FALSE}
+# ## Étape 10 — Charger les données et déclencher les mises à jour
+#
+# `reactiveVal()` est une mémoire surveillée par Shiny. `courant` contient le résultat de la
+# dernière analyse réussie ; `erreur` contient un éventuel message ; `source_courante` précise le
+# fichier actif.
+#
+# La fonction `charger()` appelle `analyser_csv()`. `tryCatch()` intercepte une erreur pour
+# l'expliquer dans l'interface sans effacer l'analyse précédente. Un premier chargement est lancé
+# automatiquement au démarrage ; les deux `observeEvent()` surveillent ensuite l'import et le
+# bouton des données par défaut.
+#
+# **Il n'est pas nécessaire de cliquer sur « générer » :** quand `courant` change, les graphiques
+# qui en dépendent se recalculent automatiquement.
+
+# ÉTAPE 10 — Mémoriser l'analyse courante et la mettre à jour lors d'un clic.
+# reactiveVal conserve un objet ; observeEvent réagit aux contrôles utilisateur.
+courant <- reactiveVal(NULL)
+erreur <- reactiveVal(NULL)
+source_courante <- reactiveVal("Données par défaut")
+charger <- function(fichier, etiquette) {
+  tryCatch(
+    {
+      resultat <- analyser_csv(fichier)
+      courant(resultat)
+      # Le chemin par défaut indique sa provenance ; un import garde son nom de fichier.
+      provenance <- attr(fichier, "source_donnees")
+      source_courante(if (is.null(provenance)) etiquette else provenance)
+      erreur(NULL)
+    },
+    error = function(e) {
+      # Conserver les résultats précédents si le nouvel import est refusé.
+      erreur(conditionMessage(e))
+    }
+  )
+}
+# Lecture initiale : CSV local en priorité, puis GitHub si absent.
+tryCatch(charger(trouver_defaut(), "Données par défaut"),
+  error = function(e) erreur(conditionMessage(e))
+)
+observeEvent(input$csv, {
+  req(input$csv)
+  charger(input$csv$datapath, paste("Import :", input$csv$name))
+})
+observeEvent(input$defaut, {
+  tryCatch(charger(trouver_defaut(), "Données par défaut"),
+    error = function(e) erreur(conditionMessage(e))
+  )
+})
+
+# ## Étape 11 — Afficher les contrôles de qualité et les effectifs
+#
+# `renderUI()` construit les éléments affichés dans les zones `uiOutput()` créées à l'étape 8.
+# Les cartes comptent les plantes du fichier, pas les mesures valides de chaque gène : une plante
+# peut avoir REM16 valide et FT1 manquant. Le journal d'exclusions précise cette différence.
+
+# ÉTAPE 11 — Actualiser les messages et les effectifs.
+output$qualite <- renderUI({
+  r <- courant()
+  div(
+    class = "note",
+    if (!is.null(erreur())) {
+      p(
+        strong("Chargement refusé : "), erreur(),
+        " Les éventuels résultats précédents restent affichés."
+      )
+    },
+    if (!is.null(r)) {
+      tagList(
+        strong(source_courante()),
+        tags$ul(lapply(r$notes, tags$li))
+      )
+    }
+  )
+})
+output$effectifs <- renderUI({
+  r <- courant()
+  req(r)
+  # Chaque plante est comptée une fois ; la validité par gène reste visible
+  # dans le tableau et dans le journal des exclusions.
+  div(
+    class = "cards",
+    div(strong(length(r$plantes)), "plantes"),
+    div(strong(sum(r$sexe == "Femelle (XX)")), "Femelles (XX) dans le fichier"),
+    div(strong(sum(r$sexe == "Mâle (XY)")), "Mâles (XY) dans le fichier"),
+    div(strong(r$genes), "lignes de gènes")
+  )
+})
+
+# ## Étape 12 — Relier les calculs aux figures et aux tableaux
+#
+# Chaque `renderPlotly()` surveille `courant()`. `req()` attend qu'une analyse existe,
+# `faire_interactif()` construit directement les figures Plotly en R, sans ggplotly().
+# Le nom situé après `output$` correspond à l'identifiant réservé dans l'interface.
+#
+# Par exemple : **`plotlyOutput("rem")` ↔ `output$rem` ↔ `faire_graphique(..., "REM16")`.** Les
+# sorties d'un onglet caché peuvent attendre son ouverture avant leur calcul. `renderDT()`
+# applique le même principe aux tableaux.
+
+# ÉTAPE 12 — Calculer les graphiques depuis l'analyse R courante.
+output$rem <- plotly::renderPlotly({
+  req(courant())
+  faire_interactif(courant(), "REM16")
+})
+output$ft <- plotly::renderPlotly({
+  req(courant())
+  faire_interactif(courant(), "FT1")
+})
+output$combine <- plotly::renderPlotly({
+  req(courant())
+  faire_interactif(courant())
+})
+output$tableau <- DT::renderDT({
+  req(courant())
+  DT::datatable(courant()$expression,
+    rownames = FALSE,
+    filter = "top", options = list(pageLength = 10, scrollX = TRUE)
+  )
+})
+output$exclusions <- DT::renderDT({
+  req(courant())
+  DT::datatable(courant()$exclues,
+    rownames = FALSE,
+    options = list(pageLength = 10, scrollX = TRUE)
+  )
+})
+
+# ## Étape 13 — Exporter les résultats de l'analyse active
+#
+# L'affichage et l'enregistrement sont deux actions distinctes. Les figures apparaissent
+# automatiquement ; le bouton de téléchargement déclenche `downloadHandler()` pour fabriquer les
+# fichiers PNG, les tableaux CSV et le bilan de qualité.
+#
+# Un dossier temporaire accueille les fichiers, puis le périphérique PNG de R exporte à
+# 300 dpi via `exporter_png()`. `zip::zipr()` les rassemble et `on.exit()` nettoie après le
+# téléchargement. L'utilitaire système ZIP doit être disponible. Le CSV d'origine et le dossier
+# des figures livré avec l'outil ne sont pas modifiés.
+
+# VOLET COMPLÉMENTAIRE — Actualiser les prédictions quand le seuil change.
+# reactive() calcule à partir des entrées ; les figures descriptives ne dépendent
+# pas de ce seuil et ne sont pas regroupées selon les prédictions.
+classification_active <- reactive({
+  req(courant(), input$seuil_rem16)
+  classer_rem16(courant(), input$seuil_rem16)
+})
+output$classification <- DT::renderDT({
+  DT::datatable(classification_active(), rownames = FALSE, filter = "top",
+    options = list(pageLength = 10, scrollX = TRUE))
+})
+output$bilan_classification <- renderUI({
+  x <- classification_active()
+  evaluables <- x$Concordance != "Non évaluable"
+  total <- sum(evaluables)
+  accords <- sum(x$Concordance == "Oui")
+  taux <- if (total > 0) paste0(round(100 * accords / total, 1), " %") else "Non évaluable"
+  p(strong("Concordance descriptive : "), accords, " / ", total,
+    " prédictions évaluables (", taux, "). ",
+    sum(!evaluables), " plante(s) non déterminée(s). Aucune validation indépendante.")
+})
+output$matrice_classification <- renderTable({
+  x <- classification_active()
+  as.data.frame.matrix(table(
+    Groupe_fichier = factor(x$Groupe_fichier, levels = c("Femelle (XX)", "Mâle (XY)")),
+    Sexe_predit = factor(x$Sexe_predit,
+      levels = c("Femelle (XX)", "Mâle (XY)", "Non déterminé"))
+  ))
+}, rownames = TRUE)
+output$export_classification <- downloadHandler(
+  filename = function() "classification_REM16.csv",
+  content = function(file) {
+    write.csv(classification_active(), file, row.names = FALSE)
+  }
+)
+
+# ÉTAPE 13 — Produire les livrables de l'analyse active dans une archive ZIP.
+# downloadHandler génère les fichiers à la demande, toujours en R.
+output$archive <- downloadHandler(
+  filename = function() "Cannascope_resultats.zip",
+  content = function(file) {
+    # Attendre une analyse valide avant de lancer la préparation de l’archive.
+    req(courant())
+    r <- courant()
+    dossier <- tempfile("cannascope_")
+    dir.create(dossier)
+    on.exit(unlink(dossier, recursive = TRUE), add = TRUE)
+    figures <- list(
+      REM16 = faire_graphique(r, "REM16"),
+      FT1 = faire_graphique(r, "FT1"), Comparaison = faire_graphique(r)
+    )
+    for (nom in names(figures)) {
+      exporter_png(figures[[nom]], file.path(dossier, paste0(nom, ".png")))
+    }
+    write.csv(r$expression, file.path(dossier, "expression_REM16_FT1.csv"), row.names = FALSE)
+    write.csv(r$exclues, file.path(dossier, "valeurs_exclues.csv"), row.names = FALSE)
+    write.csv(classification_active(), file.path(dossier, "classification_REM16.csv"), row.names = FALSE)
+    writeLines(c(source_courante(), r$notes,
+      paste("Classification exploratoire REM16 ; seuil :", input$seuil_rem16),
+      "Concordance descriptive uniquement ; aucune validation indépendante."),
+      file.path(dossier, "qualite.txt"))
+    # Conserver les versions réellement utilisées pour faciliter un diagnostic.
+    writeLines(capture.output(sessionInfo()), file.path(dossier, "environnement_R.txt"))
+    # Le package zip remplace l'utilitaire système : aucun setwd global nécessaire.
+    zip::zipr(zipfile = file, files = list.files(dossier), root = dossier,
+              include_directories = FALSE)
+  }
+)
+```
+
+## Classification exploratoire : portée et limites
+
+L'onglet complémentaire propose un sexe prédit à partir de REM16. Le seuil initial de **9,5** est une règle exploratoire adaptée à l'échelle du jeu fourni. Il peut être modifié pour observer son influence. Une valeur exactement au seuil ou une mesure manquante produit **Non déterminé**, sans attribuer arbitrairement un sexe.
+
+Les prédictions sont comparées aux groupes XX/XY fournis. La concordance ainsi obtenue est descriptive : le seuil et son évaluation utilisent les mêmes données, sans validation indépendante. Une bonne concordance dans ce fichier ne garantit pas une prédiction fiable sur de nouvelles plantes. Le fichier importé doit toujours porter les suffixes XX/XY attendus ; ce volet n'accepte pas encore les plantes sans étiquette de groupe.
+
+La classification ne modifie pas les groupes des trois figures demandées dans le devoir. Le CSV de classification, son seuil et la mention de ses limites sont exportés avec les résultats.
+
+## Méthode et qualité des données
+
+L'analyse utilise les loci **LOC115699937** et **LOC115696989**, affichés sous les noms **REM16** et **FT1**. Le préfixe `Cannabis_` est retiré avant leur recherche exacte. Les valeurs manquantes ou infinies sont exclues mesure par mesure et consignées dans l'onglet **Exclusions**. Les doublons des plantes ou des loci cibles et les valeurs textuelles inattendues provoquent un message d'erreur.
+
+Le fichier fourni comprend **138 plantes**, **20 500 lignes de gènes** et une valeur manquante de **FT1 pour 011_XX**. Après exclusion, FT1 conserve 68 femelles et 69 mâles ; REM16 conserve 69 femelles et 69 mâles.
+
+L’axe Y est intitulé **Niveau d’expression**. Les données fournies sont normalisées, mais la méthode exacte n’est pas précisée. Les valeurs extrêmes ne sont pas supprimées et aucune transformation supplémentaire n'est appliquée. Les groupes sont définis par les suffixes `_XX` et `_XY`, interprétés comme femelles et mâles pour cette activité. Une différence visuelle ne constitue pas une validation sur des plantes indépendantes.
+
+## Exécution et partage
+
+Cliquez sur **Run Document** dans RStudio. Le document utilise `runtime: shiny`, placé au niveau principal de l'en-tête YAML. Tous les calculs sont écrits en R ; Shiny et les widgets génèrent automatiquement les composants web.
+
+Cette application fonctionne tant que le processus R reste actif. Pour un lien public avec import fonctionnel, elle doit être hébergée sur un service compatible Shiny. Un fichier HTML exporté seul ne peut pas effectuer ces nouveaux calculs R.
+
+## Code de l'analyse
+
+Le script complet et annoté se trouve ci-dessous. Cliquez sur **Code** pour développer les blocs : le premier explique la lecture des données et la création des graphiques ggplot2 ; le second décrit les interactions Shiny, l'affichage et l'export. Ces blocs reproduisent le code exécuté, sans le relancer une seconde fois.
+
+```{r code-fonctions, ref.label='fonctions', eval=FALSE, echo=TRUE}
+```
+
+```{r code-serveur, ref.label='reactivite', eval=FALSE, echo=TRUE}
+```
