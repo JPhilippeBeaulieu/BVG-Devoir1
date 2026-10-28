@@ -175,7 +175,7 @@ Le lancement de la version corrigée a été confirmé sur l’ordinateur de l�
 | knitr | 1.52 |
 | zip | 3.0.2 |
 
-Les versions des packages correspondent aux téléchargements signalés lors de l’installation. La version de `xfun` n’a pas été consignée dans ce relevé.
+Les versions des packages correspondent aux téléchargements signalés lors de l’installation.
 
 Pour vérifier les versions effectivement présentes dans une session :
 
