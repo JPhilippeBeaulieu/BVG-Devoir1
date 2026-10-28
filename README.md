@@ -159,7 +159,7 @@ Aucune modification de chemin propre à un ordinateur n’est nécessaire pour l
 
 ## Environnement utilisé
 
-Le lancement de la version corrigée a été confirmé sur l’ordinateur de l’auteur avec :
+Le lancement de cette version a été confirmé sur l’ordinateur de l’auteur avec :
 
 | Élément | Version |
 |---|---|
