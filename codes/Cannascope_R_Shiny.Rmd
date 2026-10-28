@@ -753,7 +753,7 @@ Les prédictions sont comparées aux groupes XX/XY fournis. La concordance ainsi
 La classification ne modifie pas les groupes des trois figures demandées dans le devoir. Le CSV de classification, son seuil et la mention de ses limites sont exportés avec les résultats.
 
 
-## Interpretation des résultats par défaut
+## Interprétation des résultats par défaut
 
 Dans le jeu fourni, **REM16 présente une expression plus élevée chez les femelles XX que chez les mâles XY**, sans chevauchement des valeurs observées. Ce résultat soutient son intérêt comme marqueur candidat dans ces échantillons.
 
