@@ -752,6 +752,19 @@ Les prédictions sont comparées aux groupes XX/XY fournis. La concordance ainsi
 
 La classification ne modifie pas les groupes des trois figures demandées dans le devoir. Le CSV de classification, son seuil et la mention de ses limites sont exportés avec les résultats.
 
+
+## Interpretation des résultats par défaut
+
+Dans le jeu fourni, **REM16 présente une expression plus élevée chez les femelles XX que chez les mâles XY**, sans chevauchement des valeurs observées. Ce résultat soutient son intérêt comme marqueur candidat dans ces échantillons.
+
+**FT1 présente des distributions largement superposées et des médianes proches.** Il apparaît moins discriminant dans les conditions étudiées.
+
+Ces observations sont descriptives. L’application ne réalise pas de test statistique ni de validation croisée et ne démontre pas de rôle causal dans le contrôle du sexe.
+
+L’interprétation présentée concerne le **jeu fourni** et ne devient pas automatiquement applicable à un autre fichier importé.
+
+
+
 ## Méthode et qualité des données
 
 L'analyse utilise les loci **LOC115699937** et **LOC115696989**, affichés sous les noms **REM16** et **FT1**. Le préfixe `Cannabis_` est retiré avant leur recherche exacte. Les valeurs manquantes ou infinies sont exclues mesure par mesure et consignées dans l'onglet **Exclusions**. Les doublons des plantes ou des loci cibles et les valeurs textuelles inattendues provoquent un message d'erreur.
